@@ -27,30 +27,30 @@ async function run() {
     const cart_Collection = database.collection("cart");
 
     // load data get api
-    app.get("/courses", async (req, res) => {
+    app.get("/places", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = req.query.page;
       const cursor = place_Collection.find({});
       const count = await cursor.count();
-      let courses;
+      let places;
 
       if (size && page) {
-        courses = await cursor
+        places = await cursor
           .skip(size * page)
           .limit(size)
           .toArray();
       } else {
-        courses = await cursor.toArray();
+        places = await cursor.toArray();
       }
-      res.json({ count, courses });
+      res.json({ count, places });
     });
 
     // load single data get api
-    app.get("/courses/:id", async (req, res) => {
+    app.get("/places/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const course = await place_Collection.findOne(query);
-      res.json(course);
+      const place = await place_Collection.findOne(query);
+      res.json(place);
     });
 
     // load cart data according to user id get api
@@ -62,9 +62,9 @@ async function run() {
     });
 
     // add data to cart collection with additional info
-    app.post("/course/add", async (req, res) => {
-      const course = req.body;
-      const result = await cart_Collection.insertOne(course);
+    app.post("/place/add", async (req, res) => {
+      const place = req.body;
+      const result = await cart_Collection.insertOne(place);
       res.json(result);
     });
 
@@ -89,6 +89,29 @@ async function run() {
       const result = await cart_Collection.find({}).toArray();
       res.json(result);
     });
+
+    // Confirmation put API
+    app.put('/confirmation/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) }
+      const updatePlace = {
+        $set: {
+          status: "Confirm"
+        },
+      };
+      const result = await cart_Collection.updateOne(query, updatePlace);
+      res.json(result)
+      // console.log(result);
+    })
+
+    // Add place API
+    app.post('/newplace/add', async (req, res) => {
+      const user = req.body;
+      const result = await place_Collection.insertOne(user);
+      res.json(result);
+      // console.log(user)
+    });
+
   } finally {
     // await client.close();
   }
