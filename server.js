@@ -101,7 +101,6 @@ async function run() {
       };
       const result = await cart_Collection.updateOne(query, updatePlace);
       res.json(result)
-      // console.log(result);
     })
 
     // Add place API
@@ -109,7 +108,6 @@ async function run() {
       const user = req.body;
       const result = await place_Collection.insertOne(user);
       res.json(result);
-      // console.log(user)
     });
 
   } finally {
